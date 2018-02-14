@@ -20,7 +20,7 @@ int bmpWriteColor(uchar *buffer, int w, int h, char *filename)
         0,0,0,0,
         0,0,
         0,0,
-        HEADER_SIZE,
+        HEADER_SIZE, // Size of the whole Header
         0,0,0
     };
 
@@ -30,7 +30,7 @@ int bmpWriteColor(uchar *buffer, int w, int h, char *filename)
         0,0,0,0,
         0,0,0,0,
         1,0,
-        24,0
+        24,0    
     };
 
     fileHeader[2] = (uchar)(fsize);
