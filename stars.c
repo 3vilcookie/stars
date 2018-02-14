@@ -7,43 +7,98 @@
  *
  */
 
-#define WIDTH 100
-#define HEIGHT 100
+#define WIDTH 1000
+#define HEIGHT 1000  
 
 #include "stars.h"
-#include "math.h"
 
 int main(int argc, char *argv[])
 {
-    Star stars* = (Star*)malloc(sizeof(Star));
-    
-    star->pos.x = -10;
-    star->pos.y = 30;
-    star->intensity = 100;
-    star->color.r = 255;
-    star->color.g = 128;
-    star->color.b = 0;
+    /*Star stars[] = 
+      {
+      {
+      {-10,30},
+      {255,128,0},
+      100
+      },
+      {
+      {500,500},
+      {25,158,50},
+      20
+      }
+      };*/
+    /*
+       star.pos.x = -10;
+       star.pos.y = 30;
+       star.intensity = 100;
+       star.color.b = 255;
+       star.color.g = 128;
+       star.color.r = 0;
+       */
 
     BMPColor buffer[HEIGHT][WIDTH]; 
 
-    int x,y;
+    int x,y,i;
+    // Initialize buffer with black Color
     for(y=0;y<HEIGHT;y++)
         for(x=0;x<WIDTH;x++)
+        {
+            buffer[y][x].r = 0;
+            buffer[y][x].g = 0;
+            buffer[y][x].b = 0;
+        }
+
+    Pos p;
+
+    srand(time(NULL));
+    Star rndStar;
+    //for(i=0;i<sizeof(stars)/sizeof(Star);i++)
+    for(i=0;i<10;i++)
     {
-        unsigned char i = x%2 == y%2;
-        buffer[y][x].r = i*255+sin(x)*cos(y);
-        buffer[y][x].g = i*255*cos(y);
-        buffer[y][x].b = i*255*sin(x);
+        printf("Process Star %d\r",i);
+        for(y=0;y<HEIGHT;y++)
+            for(x=0;x<WIDTH;x++)
+            {
+                p.x = x;
+                p.y = y;
+                rndStar.pos.x = clamp(rand(),0,WIDTH);
+                rndStar.pos.y = clamp(rand(),0,HEIGHT);
+
+                rndStar.color.r = clamp(rand(),0,255);
+                rndStar.color.g = clamp(rand(),0,255);
+                rndStar.color.b = clamp(rand(),0,255);
+
+                rndStar.intensity = 1;//clamp(rand(),1,10);
+
+                //BMPColor *c = getPixelColorByStar(stars[i], p);
+                BMPColor *c = getPixelColorByStar(rndStar, p);
+
+                buffer[y][x].r = clamp(buffer[y][x].r + c->r, 0, 255);
+                buffer[y][x].g = clamp(buffer[y][x].g + c->g, 0, 255);
+                buffer[y][x].b = clamp(buffer[y][x].b + c->b, 0, 255);
+            }
     }
 
-    bmpWriteColor((unsigned char*) buffer,WIDTH,HEIGHT,"out.bmp");
+    char *extension = ".bmp";
+    char *filename = (char*) malloc(strlen(__TIME__) + strlen(extension) + 1);
+    strcpy(filename, __TIME__);
+    strcat(filename,extension);
+
+    bmpWriteColor((unsigned char*) buffer,WIDTH,HEIGHT,filename);
     return EXIT_SUCCESS;
 }
 
-Color* getPixelColorByStar(Star* s, Pos *pixel)
+BMPColor* getPixelColorByStar(Star s, Pos pixelPos)
 {
-    // Fill with love
-    assert(0 && "Add all prototypes to the Header file and fill the getPixelColorByStar Function with love");
+    float d = manhattanDistance(s.pos, pixelPos);
+
+    BMPColor *c = (BMPColor*) malloc(sizeof(BMPColor));
+
+    c->r = clamp((s.color.r * s.intensity)/d, 0, 255);
+    c->g = clamp((s.color.g * s.intensity)/d, 0, 255);
+    c->b = clamp((s.color.b * s.intensity)/d, 0, 255);
+
+    return c;
 }
 
 // Distance Functions {{{

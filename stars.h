@@ -12,6 +12,9 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <math.h>
+#include <string.h>
+#include <time.h>
 #include "bmp.h"
 
 typedef struct BMPColor//{{{
@@ -32,4 +35,13 @@ typedef struct Star//{{{
 }Star;//}}}                 
 
 
-#endif
+BMPColor* getPixelColorByStar(Star s, Pos pixel);
+float manhattanDistance(Pos p1, Pos p2);
+float euclidieanDistance(Pos p1, Pos p2);
+
+float min(float a, float b);
+float max(float a, float b);
+float clamp (float value, float lowerBound, float upperBound);
+
+
+#endif //STARS_H
