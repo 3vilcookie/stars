@@ -52,6 +52,12 @@ int bmpWriteColor(uchar *buffer, int w, int h, char *filename)
     fwrite(fileHeader,1,FILE_HEADER_SIZE,out);
     fwrite(infoHeader,1,INFO_HEADER_SIZE,out);
     
+    // Anmerkung SKönig: Rückwärts durch die Schleife gehen
+    // for(i=h-1;i>=0;--i) {
+    //   fwrite(buffer+(w*3*i), 3, w, out);
+    //   fwrite(pad, 1, (4-((w*3)%4))%4, out);
+    // }
+    
     for(i=0;i<h;i++)
     {
         fwrite(buffer+(w*(h-i-1)*3),3,w,out);
