@@ -53,22 +53,25 @@ int main(int argc, char *argv[])
     srand(time(NULL));
     Star rndStar;
     //for(i=0;i<sizeof(stars)/sizeof(Star);i++)
-    for(i=0;i<10;i++)
+    for(i=0;i<10000;i++)
     {
-        printf("Process Star %d\r",i);
+        printf("Process: %.2f%%    \r",(100.0/10000.0)*(i+1));
+        if( i % 100 == 0)
+            fflush(stdout);
+        rndStar.pos.x = rand() % (WIDTH+1);
+        rndStar.pos.y = rand() % (HEIGHT+1);
+
+        rndStar.color.r = rand()%256;
+        rndStar.color.g = rand()%256;
+        rndStar.color.b = rand()%256;
+
+        //rndStar.intensity = 1000-abs(((((rand()+rand()+rand()+rand()+rand()+rand()+rand()+rand()+rand()+rand())/RAND_MAX) % 1000)+1));//clamp(rand(),1,10);
+        rndStar.intensity = (float)(rand() % 1000+1)/1000.0;
         for(y=0;y<HEIGHT;y++)
             for(x=0;x<WIDTH;x++)
             {
                 p.x = x;
                 p.y = y;
-                rndStar.pos.x = clamp(rand(),0,WIDTH);
-                rndStar.pos.y = clamp(rand(),0,HEIGHT);
-
-                rndStar.color.r = clamp(rand(),0,255);
-                rndStar.color.g = clamp(rand(),0,255);
-                rndStar.color.b = clamp(rand(),0,255);
-
-                rndStar.intensity = 1;//clamp(rand(),1,10);
 
                 //BMPColor *c = getPixelColorByStar(stars[i], p);
                 BMPColor *c = getPixelColorByStar(rndStar, p);
@@ -80,8 +83,9 @@ int main(int argc, char *argv[])
     }
 
     char *extension = ".bmp";
-    char *filename = (char*) malloc(strlen(__TIME__) + strlen(extension) + 1);
-    strcpy(filename, __TIME__);
+    char *filename = (char*) malloc(strlen(OUTPUT_PATH) + strlen(__TIME__) + strlen(extension) + 1);
+    strcpy(filename,OUTPUT_PATH);
+    strcat(filename, __TIME__);
     strcat(filename,extension);
 
     bmpWriteColor((unsigned char*) buffer,WIDTH,HEIGHT,filename);
@@ -90,14 +94,14 @@ int main(int argc, char *argv[])
 
 BMPColor* getPixelColorByStar(Star s, Pos pixelPos)
 {
-    float d = manhattanDistance(s.pos, pixelPos);
+    float d = max(10.0,euclidieanDistance(s.pos, pixelPos));
+
 
     BMPColor *c = (BMPColor*) malloc(sizeof(BMPColor));
 
     c->r = clamp((s.color.r * s.intensity)/d, 0, 255);
     c->g = clamp((s.color.g * s.intensity)/d, 0, 255);
     c->b = clamp((s.color.b * s.intensity)/d, 0, 255);
-
     return c;
 }
 
@@ -110,7 +114,7 @@ float manhattanDistance(Pos p1, Pos p2)
 
 float euclidieanDistance(Pos p1, Pos p2)
 {
-    return sqrt( pow(p1.x-p2.x,2) + pow(p1.y-p2.x,2));
+    return sqrt( pow(p1.x-p2.x,2) + pow(p1.y-p2.y,2));
 }
 
 // }}}

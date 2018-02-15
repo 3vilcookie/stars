@@ -17,6 +17,8 @@
 #include <time.h>
 #include "bmp.h"
 
+#define OUTPUT_PATH "./examples/"
+
 typedef struct BMPColor//{{{
 {                           
     unsigned char r, g, b;  
@@ -30,7 +32,7 @@ typedef struct Pos//{{{
 typedef struct Star//{{{    
 {                           
     Pos pos;                  
-    BMPColor color;             
+    BMPColor color;   
     float intensity;        
 }Star;//}}}                 
 
