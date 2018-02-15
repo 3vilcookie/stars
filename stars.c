@@ -7,8 +7,8 @@
  *
  */
 
-#define WIDTH 1000
-#define HEIGHT 1000  
+#define WIDTH 1920
+#define HEIGHT 1080  
 
 #include "stars.h"
 
@@ -53,11 +53,13 @@ int main(int argc, char *argv[])
     srand(time(NULL));
     Star rndStar;
     //for(i=0;i<sizeof(stars)/sizeof(Star);i++)
-    for(i=0;i<10000;i++)
+    for(i=0;i<1000;i++)
     {
-        printf("Process: %.2f%%    \r",(100.0/10000.0)*(i+1));
         if( i % 100 == 0)
+        {
+           printf("Process: %.2f%%    \r",(100.0/5000.0)*(i+1));
             fflush(stdout);
+        }
         rndStar.pos.x = rand() % (WIDTH+1);
         rndStar.pos.y = rand() % (HEIGHT+1);
 
@@ -79,6 +81,8 @@ int main(int argc, char *argv[])
                 buffer[y][x].r = clamp(buffer[y][x].r + c->r, 0, 255);
                 buffer[y][x].g = clamp(buffer[y][x].g + c->g, 0, 255);
                 buffer[y][x].b = clamp(buffer[y][x].b + c->b, 0, 255);
+
+                free(c);
             }
     }
 
@@ -94,8 +98,7 @@ int main(int argc, char *argv[])
 
 BMPColor* getPixelColorByStar(Star s, Pos pixelPos)
 {
-    float d = max(10.0,euclidieanDistance(s.pos, pixelPos));
-
+    float d = euclidieanDistance(s.pos, pixelPos);
 
     BMPColor *c = (BMPColor*) malloc(sizeof(BMPColor));
 
