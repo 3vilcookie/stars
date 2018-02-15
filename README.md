@@ -1,4 +1,4 @@
-![FullHD Image filled with a lot of Stars](examples/14_16_10.bmp)
+![Image filled with a lot of Stars](examples/readme_title_image.png)
 # Stars
 
 Generates Images filled with stars.

@@ -67,7 +67,6 @@ int main(int argc, char *argv[])
         rndStar.color.g = rand()%256;
         rndStar.color.b = rand()%256;
 
-        //rndStar.intensity = 1000-abs(((((rand()+rand()+rand()+rand()+rand()+rand()+rand()+rand()+rand()+rand())/RAND_MAX) % 1000)+1));//clamp(rand(),1,10);
         rndStar.intensity = (float)(rand() % 1000+1)/1000.0;
         for(y=0;y<HEIGHT;y++)
             for(x=0;x<WIDTH;x++)
