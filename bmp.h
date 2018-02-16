@@ -12,6 +12,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+
 #define FILE_HEADER_SIZE 14
 #define INFO_HEADER_SIZE 40
 #define HEADER_SIZE (FILE_HEADER_SIZE + INFO_HEADER_SIZE)

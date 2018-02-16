@@ -63,10 +63,10 @@ int main(int argc, char *argv[])
         rndStar.pos.x = (rand() % WIDTH)+1;
         rndStar.pos.y = (rand() % HEIGHT)+1;
 
-        int r = rand() % 200;
-        rndStar.color.r = r;
-        rndStar.color.g = r;
-        rndStar.color.b = r+50;
+        int r = rand() % 256;
+        rndStar.color.r = 256-r;
+        rndStar.color.g = 0;
+        rndStar.color.b = r;
 
         rndStar.intensity = (float)(rand() % 10000+1)/1000.0;
         for(y=0;y<HEIGHT;y++)

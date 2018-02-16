@@ -9,10 +9,10 @@
 
 #include "bmp.h"
 
-size_t bmpWriteColor(uchar *buffer, int w, int h, char *filename)
+size_t bmpWriteColor(uchar *buffer, int width, int height, char *filename)
 {
     int i;
-    size_t fsize = w*h*3+HEADER_SIZE;
+    size_t fsize = width * height * 3  + HEADER_SIZE;
     uchar pad[3] = {0,0,0};
     uchar fileHeader[FILE_HEADER_SIZE] = 
     {
@@ -33,38 +33,37 @@ size_t bmpWriteColor(uchar *buffer, int w, int h, char *filename)
         24,0    
     };
 
+
     fileHeader[2] = (uchar)(fsize);
     fileHeader[3] = (uchar)(fsize>>8);
     fileHeader[4] = (uchar)(fsize>>16);
     fileHeader[5] = (uchar)(fsize>>24);
 
-    infoHeader[4] = (uchar)(w);
-    infoHeader[5] = (uchar)(w>>8);
-    infoHeader[6] = (uchar)(w>>16);
-    infoHeader[7] = (uchar)(w>>24);
-    infoHeader[8] = (uchar)(h);
-    infoHeader[9] = (uchar)(h>>8);
-    infoHeader[10] = (uchar)(h>>16);
-    infoHeader[11] = (uchar)(h>>24);
+    infoHeader[4] = (uchar)(width);
+    infoHeader[5] = (uchar)(width>>8);
+    infoHeader[6] = (uchar)(width>>16);
+    infoHeader[7] = (uchar)(width>>24);
+    infoHeader[8] = (uchar)(height);
+    infoHeader[9] = (uchar)(height>>8);
+    infoHeader[10] = (uchar)(height>>16);
+    infoHeader[11] = (uchar)(height>>24);
 
 
     FILE *out = fopen(filename, "wb");
     fwrite(fileHeader,1,FILE_HEADER_SIZE,out);
     fwrite(infoHeader,1,INFO_HEADER_SIZE,out);
     
-    // Anmerkung SKönig: Rückwärts durch die Schleife gehen
-     for(i=h-1;i>=0;--i) {
-       fwrite(buffer+(w*3*i), 3, w, out);
-       fwrite(pad, 1, (4-((w*3)%4))%4, out);
-     }
-    
-    /*
-    for(i=0;i<h;i++)
+    uchar paddingLength = (4-(3*width)%4)%4;
+    uchar bytesPerPixel = 3;
+    unsigned int realWidth = width*bytesPerPixel;
+
+    for(i=height;i>=0;i--)
     {
-        fwrite(buffer+(w*(h-i-1)*3),3,w,out);
-        fwrite(pad,1,(4-(w*3)%4)%4,out);
+        unsigned int offset = realWidth * (height-i-1);
+        fwrite(buffer+offset,bytesPerPixel,width,out);
+        fwrite(pad,1,paddingLength,out);
     }
-    */
+    
 
     fclose(out);
     
