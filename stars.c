@@ -53,21 +53,22 @@ int main(int argc, char *argv[])
     srand(time(NULL));
     Star rndStar;
     //for(i=0;i<sizeof(stars)/sizeof(Star);i++)
-    for(i=0;i<1000;i++)
+    for(i=0;i<100;i++)
     {
         if( i % 100 == 0)
         {
            printf("Process: %.2f%%    \r",(100.0/5000.0)*(i+1));
             fflush(stdout);
         }
-        rndStar.pos.x = rand() % (WIDTH+1);
-        rndStar.pos.y = rand() % (HEIGHT+1);
+        rndStar.pos.x = (rand() % WIDTH)+1;
+        rndStar.pos.y = (rand() % HEIGHT)+1;
 
-        rndStar.color.r = rand()%256;
-        rndStar.color.g = rand()%256;
-        rndStar.color.b = rand()%256;
+        int r = rand() % 200;
+        rndStar.color.r = r;
+        rndStar.color.g = r;
+        rndStar.color.b = r+50;
 
-        rndStar.intensity = (float)(rand() % 1000+1)/1000.0;
+        rndStar.intensity = (float)(rand() % 10000+1)/1000.0;
         for(y=0;y<HEIGHT;y++)
             for(x=0;x<WIDTH;x++)
             {
@@ -85,14 +86,37 @@ int main(int argc, char *argv[])
             }
     }
 
-    char *extension = ".bmp";
-    char *filename = (char*) malloc(strlen(OUTPUT_PATH) + strlen(__TIME__) + strlen(extension) + 1);
-    strcpy(filename,OUTPUT_PATH);
-    strcat(filename, __TIME__);
-    strcat(filename,extension);
+    char* filename = getUniqueFilenameWithPath(OUTPUT_PATH,BASE_FILENAME,"bmp");
+    
+    size_t fileSize = bmpWriteColor((unsigned char*) buffer,WIDTH,HEIGHT,filename);
+    printf("Wrote %lu bytes to %s\n", fileSize, filename);
 
-    bmpWriteColor((unsigned char*) buffer,WIDTH,HEIGHT,filename);
     return EXIT_SUCCESS;
+}
+
+char* getUniqueFilenameWithPath(char* path, char* baseFilename, char* extension)
+{
+    // newFilename consits of: path + baseFilename + Index + . + extension + \0
+    char *newFilename = (char*) malloc(strlen(path) + strlen(baseFilename) + 5 + 1 + strlen(extension) + 1);
+    
+    // Unsigned int can have 5 digits (log(2^16) ~ 5)
+    unsigned int index = 1;
+    FILE *f = NULL;
+
+    while(1)
+    {
+        sprintf(newFilename, "%s%s%05u.%s", path, baseFilename, index, extension);
+        f  = fopen(newFilename,"r");
+        if(f == NULL)
+            break;
+
+        fclose(f);
+        index++;
+    }
+
+    free(f);
+
+    return newFilename;
 }
 
 BMPColor* getPixelColorByStar(Star s, Pos pixelPos)

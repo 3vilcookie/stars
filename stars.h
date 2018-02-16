@@ -18,6 +18,7 @@
 #include "bmp.h"
 
 #define OUTPUT_PATH "./examples/"
+#define BASE_FILENAME "starout"
 
 typedef struct BMPColor//{{{
 {                           
@@ -36,11 +37,14 @@ typedef struct Star//{{{
     float intensity;        
 }Star;//}}}                 
 
+// Utils and usability features which make the main program easier to understand
+char* getUniqueFilenameWithPath(char* path, char* baseFilename, char* extension);
 
+
+// Where the Graphic Stuff happens
 BMPColor* getPixelColorByStar(Star s, Pos pixel);
 float manhattanDistance(Pos p1, Pos p2);
 float euclidieanDistance(Pos p1, Pos p2);
-
 float min(float a, float b);
 float max(float a, float b);
 float clamp (float value, float lowerBound, float upperBound);
