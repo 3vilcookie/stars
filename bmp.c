@@ -13,11 +13,12 @@ size_t bmpWriteColor(uchar *buffer, int width, int height, char *filename)
 {
     int i;
     size_t fsize = width * height * 3  + HEADER_SIZE;
+
     uchar pad[3] = {0,0,0};
     uchar fileHeader[FILE_HEADER_SIZE] = 
     {
         'B','M',    // Magic Number
-        0,0,0,0,
+        0,0,0,0,    
         0,0,
         0,0,
         HEADER_SIZE, // Size of the whole Header
@@ -55,12 +56,12 @@ size_t bmpWriteColor(uchar *buffer, int width, int height, char *filename)
     
     uchar paddingLength = (4-(3*width)%4)%4;
     uchar bytesPerPixel = 3;
-    unsigned int realWidth = width*bytesPerPixel;
+    size_t realWidth = width*bytesPerPixel;
 
     for(i=height;i>=0;i--)
     {
-        unsigned int offset = realWidth * (height-i-1);
-        fwrite(buffer+offset,bytesPerPixel,width,out);
+        size_t offset = realWidth * (height-i-1);
+        fwrite(buffer+(offset),bytesPerPixel,width,out);
         fwrite(pad,1,paddingLength,out);
     }
     

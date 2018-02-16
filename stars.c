@@ -8,7 +8,7 @@
  */
 
 #define WIDTH 1920
-#define HEIGHT 1080  
+#define HEIGHT 1080 
 
 #include "stars.h"
 
@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
     srand(time(NULL));
     Star rndStar;
     //for(i=0;i<sizeof(stars)/sizeof(Star);i++)
-    for(i=0;i<100;i++)
+    for(i=0;i<1000;i++)
     {
         if( i % 100 == 0)
         {
@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
 
         int r = rand() % 256;
         rndStar.color.r = 256-r;
-        rndStar.color.g = 0;
+        rndStar.color.g = r %50;
         rndStar.color.b = r;
 
         rndStar.intensity = (float)(rand() % 10000+1)/1000.0;
