@@ -19,6 +19,6 @@
 
 typedef unsigned char uchar;
 
-size_t bmpWriteColor(uchar *buffer, int width, int height, char *filename);
+size_t bmpWriteColor(uchar **buffer, int width, int height, char *filename);
 
 #endif

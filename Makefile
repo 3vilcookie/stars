@@ -7,7 +7,7 @@ stars:
 
 .PHONY: debug
 debug:
-	gcc -Wall -g bmp.c stars.c -o stars -lm
+	gcc -Wall -g bmp.c stars.c -o stars_dbg -lm
 
 .PHONY: clean
 clean:

@@ -14,6 +14,8 @@
 
 int main(int argc, char *argv[])
 {
+
+    int x,y,i;
     /*Star stars[] = 
       {
       {
@@ -34,11 +36,15 @@ int main(int argc, char *argv[])
        star.color.b = 255;
        star.color.g = 128;
        star.color.r = 0;
-       */
+ 
+ */
+    
+    BMPColor **buffer = calloc(HEIGHT, sizeof(BMPColor**));
+    for(y=0;y<HEIGHT;y++)
+        buffer[y] = calloc(WIDTH, sizeof(BMPColor*));
 
-    BMPColor buffer[HEIGHT][WIDTH]; 
+    //BMPColor buffer[HEIGHT][WIDTH]; 
 
-    int x,y,i;
     // Initialize buffer with black Color
     for(y=0;y<HEIGHT;y++)
         for(x=0;x<WIDTH;x++)
@@ -53,7 +59,7 @@ int main(int argc, char *argv[])
     srand(time(NULL));
     Star rndStar;
     //for(i=0;i<sizeof(stars)/sizeof(Star);i++)
-    for(i=0;i<1000;i++)
+    for(i=0;i<10;i++)
     {
         if( i % 100 == 0)
         {
@@ -88,9 +94,10 @@ int main(int argc, char *argv[])
 
     char* filename = getUniqueFilenameWithPath(OUTPUT_PATH,BASE_FILENAME,"bmp");
     
-    size_t fileSize = bmpWriteColor((unsigned char*) buffer,WIDTH,HEIGHT,filename);
+    size_t fileSize = bmpWriteColor((unsigned char**) buffer,WIDTH,HEIGHT,filename);
     printf("Wrote %lu bytes to %s\n", fileSize, filename);
 
+    free(buffer);
     return EXIT_SUCCESS;
 }
 

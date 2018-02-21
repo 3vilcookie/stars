@@ -9,7 +9,10 @@
 
 #include "bmp.h"
 
-size_t bmpWriteColor(uchar *buffer, int width, int height, char *filename)
+// TODO: Go through buffer with coordinates (x,y) instead of index while
+//       we now use uchar** instead of uchar*
+
+size_t bmpWriteColor(uchar **buffer, int width, int height, char *filename)
 {
     int i;
     size_t fsize = width * height * 3  + HEADER_SIZE;
