@@ -39,6 +39,7 @@ typedef struct Star//{{{
 
 // Utils and usability features which make the main program easier to understand
 char* getUniqueFilenameWithPath(char* path, char* baseFilename, char* extension);
+BMPColor* mixRGB(BMPColor a, BMPColor b, unsigned mixMethod );
 
 
 // Where the Graphic Stuff happens
@@ -49,6 +50,5 @@ float min(float a, float b);
 float max(float a, float b);
 float clamp (float value, float lowerBound, float upperBound);
 
-BMPColor* mixRGB(BMPColor a, BMPColor b, unsigned mixMethod );
 
 #endif //STARS_H

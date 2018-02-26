@@ -71,20 +71,23 @@ int main(int argc, char *argv[])
     //for(i=0;i<sizeof(stars)/sizeof(Star);i++)
     for(i=0;i<STARS;i++)
     {
-        if( i % 100 == 0)
+        if( i % 10 == 0)
         {
             printf("Process: %.2f%%    \r",(100.0/5000.0)*(i+1));
             fflush(stdout);
         }
-        rndStar.pos.x = (rand() % WIDTH)+1;
-        rndStar.pos.y = (rand() % HEIGHT)+1;
+ //       rndStar.pos.x = (rand() % WIDTH)+1;
+   //     rndStar.pos.y = (rand() % HEIGHT)+1;
+
+        rndStar.pos.x = (500.0*sin(i)+WIDTH/2.0);
+        rndStar.pos.y = (500.0*cos(i)+HEIGHT/2.0);
 
         int r = rand() % 256;
         rndStar.color.r = 256-r;
         rndStar.color.g = r %50;
         rndStar.color.b = r;
 
-        rndStar.intensity = (float)(rand() % 10000+1)/1000.0;
+        rndStar.intensity = 5;//(float)(rand() % 10000+1)/1000.0;
         for(y=0;y<HEIGHT;y++)
             for(x=0;x<WIDTH;x++)
             {
@@ -92,7 +95,7 @@ int main(int argc, char *argv[])
                 p.y = y;
 
                 //BMPColor *c = getPixelColorByStar(stars[i], p);
-                buffer[y][x] = *mixRGB(*getPixelColorByStar(rndStar, p),buffer[y][x],MIX_SUB);
+                buffer[y][x] = *mixRGB(*getPixelColorByStar(rndStar, p),buffer[y][x],MIX_OR);
                 
                 /*
                 buffer[y][x].r = clamp(buffer[y][x].r ^ c->r, 0, 255);
@@ -189,6 +192,7 @@ BMPColor* mixRGB(BMPColor a, BMPColor b, unsigned mixMethod )
             resultColor->r = a.r;
             resultColor->g = a.g;
             resultColor->b = a.b;
+            break;
     }
 
 

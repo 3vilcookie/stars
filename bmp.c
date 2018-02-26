@@ -61,7 +61,6 @@ size_t bmpWriteColor(uchar **buffer, int width, int height, char *filename)
     uchar bytesPerPixel = 3;
     //size_t realWidth = width*bytesPerPixel;
 
-
     int y;
     for(y=height-1;y>=0;y--)
     {
