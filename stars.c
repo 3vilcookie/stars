@@ -7,115 +7,134 @@
  *
  */
 
-#define WIDTH 1920
-#define HEIGHT 1080 
-#define STARS 50
+#define WIDTH (1920)
+#define HEIGHT (1080)
+#define STARS 10
+
 #include "stars.h"
 
-enum{
+enum{//{{{
 
     MIX_XOR,
     MIX_BLEND,
     MIX_ADD,
     MIX_SUB,
+    MIX_MUL,
     MIX_AND,
     MIX_OR,
-};
+};//}}}
 
-int main(int argc, char *argv[])
+int main(int argc, char *argv[])//{{{
 {
 
+    int width,height;
+    char* filename;
+    size_t fileSize;
     int x,y,i;
-    /*Star stars[] = 
-      {
-      {
-      {-10,30},
-      {255,128,0},
-      100
-      },
-      {
-      {500,500},
-      {25,158,50},
-      20
-      }
-      };*/
-    /*
-       star.pos.x = -10;
-       star.pos.y = 30;
-       star.intensity = 100;
-       star.color.b = 255;
-       star.color.g = 128;
-       star.color.r = 0;
-
-*/
-
-    BMPColor **buffer = calloc(HEIGHT, sizeof(BMPColor**));
-    for(y=0;y<HEIGHT;y++)
-        buffer[y] = calloc(WIDTH, sizeof(BMPColor*));
-
-    //BMPColor buffer[HEIGHT][WIDTH]; 
-
-    // Initialize buffer with black Color
-    for(y=0;y<HEIGHT;y++)
-        for(x=0;x<WIDTH;x++)
-        {
-            buffer[y][x].r = 0;
-            buffer[y][x].g = 0;
-            buffer[y][x].b = 0;
-        }
 
     Pos p;
-
     srand(time(NULL));
     Star rndStar;
-    //for(i=0;i<sizeof(stars)/sizeof(Star);i++)
+
+    BMPColor initColor = {0,0,0};
+    BMPColor **buffer = getEmptyFrameBuffer(WIDTH,HEIGHT,initColor);
+
+    if(buffer == NULL)
+    {
+        puts("Couldn't allocate memory. Width > 0 and Height > 0?");
+        return EXIT_FAILURE;
+    }
+
     for(i=0;i<STARS;i++)
     {
-        if( i % 10 == 0)
-        {
-            printf("Process: %.2f%%    \r",(100.0/5000.0)*(i+1));
-            fflush(stdout);
-        }
- //       rndStar.pos.x = (rand() % WIDTH)+1;
-   //     rndStar.pos.y = (rand() % HEIGHT)+1;
+        printf("Process Star %d/%d\r", i+1,STARS);
+        fflush(stdout);
 
-        rndStar.pos.x = (500.0*sin(i)+WIDTH/2.0);
-        rndStar.pos.y = (500.0*cos(i)+HEIGHT/2.0);
+        rndStar.pos.x = (rand() % WIDTH)+1;
+        rndStar.pos.y = (rand() % HEIGHT)+1;
 
         int r = rand() % 256;
-        rndStar.color.r = 256-r;
-        rndStar.color.g = r %50;
+        rndStar.color.r = r;
+        rndStar.color.g = r;
         rndStar.color.b = r;
 
-        rndStar.intensity = 5;//(float)(rand() % 10000+1)/1000.0;
+        rndStar.intensity = 3;
         for(y=0;y<HEIGHT;y++)
             for(x=0;x<WIDTH;x++)
             {
                 p.x = x;
                 p.y = y;
-
-                //BMPColor *c = getPixelColorByStar(stars[i], p);
-                buffer[y][x] = *mixRGB(*getPixelColorByStar(rndStar, p),buffer[y][x],MIX_OR);
-                
-                /*
-                buffer[y][x].r = clamp(buffer[y][x].r ^ c->r, 0, 255);
-                buffer[y][x].g = clamp(buffer[y][x].g ^ c->g, 0, 255);
-                buffer[y][x].b = clamp(buffer[y][x].b ^ c->b, 0, 255);
-                */
-
+                buffer[y][x] = mixRGB(getPixelColorByStar(rndStar, p),buffer[y][x],MIX_OR);
             }
     }
 
-    char* filename = getUniqueFilenameWithPath(OUTPUT_PATH,BASE_FILENAME,"bmp");
+    filename = getUniqueFilenameWithPath(OUTPUT_PATH,BASE_FILENAME,"bmp");
 
-    size_t fileSize = bmpWriteColor((unsigned char**) buffer,WIDTH,HEIGHT,filename);
+    fileSize = bmpWriteColor((unsigned char**) buffer,WIDTH,HEIGHT,filename);
     printf("Wrote %lu bytes to %s\n", fileSize, filename);
 
     free(buffer);
     return EXIT_SUCCESS;
+}//}}}
+
+BMPColor** getEmptyFrameBuffer(unsigned width, unsigned height, BMPColor initColor)
+{
+    if(width == 0 || height == 0)
+        return NULL;
+
+    int x,y;
+    // Make a 2D Array 
+    BMPColor **buffer = calloc(HEIGHT, sizeof(BMPColor**));
+
+    if(buffer == NULL)return NULL;
+
+    // Initialize every row 
+    for(y=0;y<HEIGHT;y++)
+    {
+        buffer[y] = calloc(WIDTH, sizeof(BMPColor*));
+        if(buffer[y] == NULL)
+            return NULL;
+    }
+
+    // Initialize buffer with black Color
+    for(y=0;y<HEIGHT;y++)
+        for(x=0;x<WIDTH;x++)
+        {
+            buffer[y][x].r = initColor.r;
+            buffer[y][x].g = initColor.g;
+            buffer[y][x].b = initColor.b;
+        }
+
+    return buffer;
+
 }
 
-char* getUniqueFilenameWithPath(char* path, char* baseFilename, char* extension)
+char* getUniqueFrameFilenameWithPath(char* path, char* baseFilename, unsigned frameNumber, char* extension)//{{{
+{
+    // newFilename consits of: path + baseFilename + Index + # + frame number. + extension + \0
+    char *newFilename = (char*) malloc(strlen(path) + strlen(baseFilename) + 5 + 1 + 5 + 1 + strlen(extension) + 1);
+
+    // Unsigned int can have 5 digits (log(2^16) ~ 5)
+    unsigned int index = 1;
+    FILE *f = NULL;
+
+    while(1)
+    {
+        sprintf(newFilename, "%s%s%05u#%05u.%s", path, baseFilename, index, frameNumber, extension);
+        f  = fopen(newFilename,"r");
+        if(f == NULL)
+            break;
+
+        fclose(f);
+        index++;
+    }
+
+    free(f);
+
+    return newFilename;
+}//}}}
+
+char* getUniqueFilenameWithPath(char* path, char* baseFilename, char* extension)//{{{
 {
     // newFilename consits of: path + baseFilename + Index + . + extension + \0
     char *newFilename = (char*) malloc(strlen(path) + strlen(baseFilename) + 5 + 1 + strlen(extension) + 1);
@@ -138,9 +157,9 @@ char* getUniqueFilenameWithPath(char* path, char* baseFilename, char* extension)
     free(f);
 
     return newFilename;
-}
+}//}}}
 
-BMPColor* getPixelColorByStar(Star s, Pos pixelPos)
+BMPColor getPixelColorByStar(Star s, Pos pixelPos)//{{{
 {
     float d = euclidieanDistance(s.pos, pixelPos);
 
@@ -149,12 +168,12 @@ BMPColor* getPixelColorByStar(Star s, Pos pixelPos)
     c->r = clamp((s.color.r * s.intensity)/d, 0, 255);
     c->g = clamp((s.color.g * s.intensity)/d, 0, 255);
     c->b = clamp((s.color.b * s.intensity)/d, 0, 255);
-    return c;
-}
+    return *c;
+}//}}}
 
-BMPColor* mixRGB(BMPColor a, BMPColor b, unsigned mixMethod )
+BMPColor mixRGB(BMPColor a, BMPColor b, unsigned mixMethod )//{{{
 {
-    BMPColor *resultColor = (BMPColor*)malloc(sizeof(BMPColor));
+    BMPColor *resultColor = &a;
 
     switch(mixMethod)
     {
@@ -164,6 +183,7 @@ BMPColor* mixRGB(BMPColor a, BMPColor b, unsigned mixMethod )
             resultColor->b = a.b*0.5 + b.b*0.5;
             break;
         case MIX_ADD:
+
             resultColor->r = a.r + b.r;
             resultColor->g = a.g + b.g;
             resultColor->b = a.b + b.b;
@@ -172,6 +192,11 @@ BMPColor* mixRGB(BMPColor a, BMPColor b, unsigned mixMethod )
             resultColor->r = a.r - b.r;
             resultColor->g = a.g - b.g;
             resultColor->b = a.b - b.b;
+            break;
+        case MIX_MUL:
+            resultColor->r = a.r * b.r;
+            resultColor->g = a.g * b.g;
+            resultColor->b = a.b * b.b;
             break;
         case MIX_OR:
             resultColor->r = a.r | b.r;
@@ -189,9 +214,6 @@ BMPColor* mixRGB(BMPColor a, BMPColor b, unsigned mixMethod )
             resultColor->b = a.b ^ b.b;
             break;
         default:
-            resultColor->r = a.r;
-            resultColor->g = a.g;
-            resultColor->b = a.b;
             break;
     }
 
@@ -200,8 +222,9 @@ BMPColor* mixRGB(BMPColor a, BMPColor b, unsigned mixMethod )
     resultColor->g = clamp(resultColor->g, 0, 255);
     resultColor->b = clamp(resultColor->b, 0, 255);
 
-    return resultColor;
-}
+
+    return *resultColor;
+}//}}}
 
 // Distance Functions {{{
 

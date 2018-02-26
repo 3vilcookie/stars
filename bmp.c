@@ -8,13 +8,8 @@
  */
 
 #include "bmp.h"
-
-// TODO: Go through buffer with coordinates (x,y) instead of index while
-//       we now use uchar** instead of uchar*
-
 size_t bmpWriteColor(uchar **buffer, int width, int height, char *filename)
 {
-    //int i;
     size_t fsize = width * height * 3  + HEADER_SIZE;
 
     uchar pad[3] = {0,0,0};
@@ -59,7 +54,6 @@ size_t bmpWriteColor(uchar **buffer, int width, int height, char *filename)
     
     uchar paddingLength = (4-(3*width)%4)%4;
     uchar bytesPerPixel = 3;
-    //size_t realWidth = width*bytesPerPixel;
 
     int y;
     for(y=height-1;y>=0;y--)
@@ -67,20 +61,6 @@ size_t bmpWriteColor(uchar **buffer, int width, int height, char *filename)
         fwrite(&buffer[y][0],bytesPerPixel,width,out);
         fwrite(pad,1,paddingLength,out);
     }
-
-    /*
-    for(i=height;i>=0;i--)
-    {
-        puts ("HELLO");
-        size_t offset = realWidth * (height-i-1);
-        puts ("FROM");
-        fwrite(buffer+(offset),bytesPerPixel,width,out);
-        puts ("THE");
-        fwrite(pad,1,paddingLength,out);
-        puts ("OTHER");
-    }
-    */
-    
 
     fclose(out);
     

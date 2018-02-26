@@ -38,12 +38,14 @@ typedef struct Star//{{{
 }Star;//}}}                 
 
 // Utils and usability features which make the main program easier to understand
+BMPColor** getEmptyFrameBuffer(unsigned width, unsigned height, BMPColor initColor);
 char* getUniqueFilenameWithPath(char* path, char* baseFilename, char* extension);
-BMPColor* mixRGB(BMPColor a, BMPColor b, unsigned mixMethod );
+char* getUniqueFrameFilenameWithPath(char* path, char* baseFilename, unsigned frameNumber, char* extension);
+BMPColor mixRGB(BMPColor a, BMPColor b, unsigned mixMethod );
 
 
 // Where the Graphic Stuff happens
-BMPColor* getPixelColorByStar(Star s, Pos pixel);
+BMPColor getPixelColorByStar(Star s, Pos pixel);
 float manhattanDistance(Pos p1, Pos p2);
 float euclidieanDistance(Pos p1, Pos p2);
 float min(float a, float b);
