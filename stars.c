@@ -26,7 +26,7 @@ enum{//{{{
 
 int main(int argc, char *argv[])//{{{
 {
-
+		
     int width,height;
     char* filename;
     size_t fileSize;
@@ -34,10 +34,14 @@ int main(int argc, char *argv[])//{{{
 
     Pos p;
     srand(time(NULL));
-    Star rndStar;
+    Star s;
 
     BMPColor initColor = {0,0,0};
-    BMPColor **buffer = getEmptyFrameBuffer(WIDTH,HEIGHT,initColor);
+    BMPColor **buffer;
+
+		scanf("%d %d", &width, &height);
+
+		buffer = getEmptyFrameBuffer(width, height,initColor);
 
     if(buffer == NULL)
     {
@@ -45,32 +49,35 @@ int main(int argc, char *argv[])//{{{
         return EXIT_FAILURE;
     }
 
-    for(i=0;i<STARS;i++)
+ //   for(i=0;i<STARS;i++)
+		i=0;
+		
+		while(scanf("%d %d %hhu %hhu %hhu %f", &s.pos.x, &s.pos.y, &s.color.r, &s.color.g, &s.color.b, &s.intensity)>0)
     {
-        printf("Process Star %d/%d\r", i+1,STARS);
         fflush(stdout);
 
-        rndStar.pos.x = (rand() % WIDTH)+1;
-        rndStar.pos.y = (rand() % HEIGHT)+1;
+       // rndStar.pos.x = (rand() % width)+1;
+       // rndStar.pos.y = (rand() % height)+1;
 
-        int r = rand() % 256;
-        rndStar.color.r = r;
-        rndStar.color.g = r;
-        rndStar.color.b = r;
+       // int r = rand() % 256;
+        
+			 //	rndStar.color.r = r;
+       //  rndStar.color.g = r;
+       // rndStar.color.b = r;
 
-        rndStar.intensity = 3;
-        for(y=0;y<HEIGHT;y++)
-            for(x=0;x<WIDTH;x++)
+       // rndStar.intensity = 3;
+        for(y=0;y<height;y++)
+            for(x=0;x<width;x++)
             {
                 p.x = x;
                 p.y = y;
-                buffer[y][x] = mixRGB(getPixelColorByStar(rndStar, p),buffer[y][x],MIX_OR);
+                buffer[y][x] = mixRGB(getPixelColorByStar(s, p),buffer[y][x],MIX_OR);
             }
     }
 
     filename = getUniqueFilenameWithPath(OUTPUT_PATH,BASE_FILENAME,"bmp");
 
-    fileSize = bmpWriteColor((unsigned char**) buffer,WIDTH,HEIGHT,filename);
+    fileSize = bmpWriteColor((unsigned char**) buffer, width, height, filename);
     printf("Wrote %lu bytes to %s\n", fileSize, filename);
 
     free(buffer);
@@ -84,21 +91,21 @@ BMPColor** getEmptyFrameBuffer(unsigned width, unsigned height, BMPColor initCol
 
     int x,y;
     // Make a 2D Array 
-    BMPColor **buffer = calloc(HEIGHT, sizeof(BMPColor**));
+    BMPColor **buffer = calloc(height, sizeof(BMPColor**));
 
     if(buffer == NULL)return NULL;
 
     // Initialize every row 
-    for(y=0;y<HEIGHT;y++)
+    for(y=0;y<width;y++)
     {
-        buffer[y] = calloc(WIDTH, sizeof(BMPColor*));
+        buffer[y] = calloc(width, sizeof(BMPColor*));
         if(buffer[y] == NULL)
             return NULL;
     }
 
     // Initialize buffer with black Color
-    for(y=0;y<HEIGHT;y++)
-        for(x=0;x<WIDTH;x++)
+    for(y=0;y<height;y++)
+        for(x=0;x<width;x++)
         {
             buffer[y][x].r = initColor.r;
             buffer[y][x].g = initColor.g;
