@@ -49,5 +49,6 @@ float min(float a, float b);
 float max(float a, float b);
 float clamp (float value, float lowerBound, float upperBound);
 
+BMPColor* mixRGB(BMPColor a, BMPColor b, unsigned mixMethod );
 
 #endif //STARS_H

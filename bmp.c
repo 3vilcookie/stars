@@ -14,7 +14,7 @@
 
 size_t bmpWriteColor(uchar **buffer, int width, int height, char *filename)
 {
-    int i;
+    //int i;
     size_t fsize = width * height * 3  + HEADER_SIZE;
 
     uchar pad[3] = {0,0,0};
@@ -59,14 +59,28 @@ size_t bmpWriteColor(uchar **buffer, int width, int height, char *filename)
     
     uchar paddingLength = (4-(3*width)%4)%4;
     uchar bytesPerPixel = 3;
-    size_t realWidth = width*bytesPerPixel;
+    //size_t realWidth = width*bytesPerPixel;
 
-    for(i=height;i>=0;i--)
+
+    int y;
+    for(y=height-1;y>=0;y--)
     {
-        size_t offset = realWidth * (height-i-1);
-        fwrite(buffer+(offset),bytesPerPixel,width,out);
+        fwrite(&buffer[y][0],bytesPerPixel,width,out);
         fwrite(pad,1,paddingLength,out);
     }
+
+    /*
+    for(i=height;i>=0;i--)
+    {
+        puts ("HELLO");
+        size_t offset = realWidth * (height-i-1);
+        puts ("FROM");
+        fwrite(buffer+(offset),bytesPerPixel,width,out);
+        puts ("THE");
+        fwrite(pad,1,paddingLength,out);
+        puts ("OTHER");
+    }
+    */
     
 
     fclose(out);

@@ -9,8 +9,18 @@
 
 #define WIDTH 1920
 #define HEIGHT 1080 
-
+#define STARS 50
 #include "stars.h"
+
+enum{
+
+    MIX_XOR,
+    MIX_BLEND,
+    MIX_ADD,
+    MIX_SUB,
+    MIX_AND,
+    MIX_OR,
+};
 
 int main(int argc, char *argv[])
 {
@@ -36,9 +46,9 @@ int main(int argc, char *argv[])
        star.color.b = 255;
        star.color.g = 128;
        star.color.r = 0;
- 
- */
-    
+
+*/
+
     BMPColor **buffer = calloc(HEIGHT, sizeof(BMPColor**));
     for(y=0;y<HEIGHT;y++)
         buffer[y] = calloc(WIDTH, sizeof(BMPColor*));
@@ -59,11 +69,11 @@ int main(int argc, char *argv[])
     srand(time(NULL));
     Star rndStar;
     //for(i=0;i<sizeof(stars)/sizeof(Star);i++)
-    for(i=0;i<10;i++)
+    for(i=0;i<STARS;i++)
     {
         if( i % 100 == 0)
         {
-           printf("Process: %.2f%%    \r",(100.0/5000.0)*(i+1));
+            printf("Process: %.2f%%    \r",(100.0/5000.0)*(i+1));
             fflush(stdout);
         }
         rndStar.pos.x = (rand() % WIDTH)+1;
@@ -82,18 +92,19 @@ int main(int argc, char *argv[])
                 p.y = y;
 
                 //BMPColor *c = getPixelColorByStar(stars[i], p);
-                BMPColor *c = getPixelColorByStar(rndStar, p);
+                buffer[y][x] = *mixRGB(*getPixelColorByStar(rndStar, p),buffer[y][x],MIX_SUB);
+                
+                /*
+                buffer[y][x].r = clamp(buffer[y][x].r ^ c->r, 0, 255);
+                buffer[y][x].g = clamp(buffer[y][x].g ^ c->g, 0, 255);
+                buffer[y][x].b = clamp(buffer[y][x].b ^ c->b, 0, 255);
+                */
 
-                buffer[y][x].r = clamp(buffer[y][x].r + c->r, 0, 255);
-                buffer[y][x].g = clamp(buffer[y][x].g + c->g, 0, 255);
-                buffer[y][x].b = clamp(buffer[y][x].b + c->b, 0, 255);
-
-                free(c);
             }
     }
 
     char* filename = getUniqueFilenameWithPath(OUTPUT_PATH,BASE_FILENAME,"bmp");
-    
+
     size_t fileSize = bmpWriteColor((unsigned char**) buffer,WIDTH,HEIGHT,filename);
     printf("Wrote %lu bytes to %s\n", fileSize, filename);
 
@@ -105,7 +116,7 @@ char* getUniqueFilenameWithPath(char* path, char* baseFilename, char* extension)
 {
     // newFilename consits of: path + baseFilename + Index + . + extension + \0
     char *newFilename = (char*) malloc(strlen(path) + strlen(baseFilename) + 5 + 1 + strlen(extension) + 1);
-    
+
     // Unsigned int can have 5 digits (log(2^16) ~ 5)
     unsigned int index = 1;
     FILE *f = NULL;
@@ -136,6 +147,56 @@ BMPColor* getPixelColorByStar(Star s, Pos pixelPos)
     c->g = clamp((s.color.g * s.intensity)/d, 0, 255);
     c->b = clamp((s.color.b * s.intensity)/d, 0, 255);
     return c;
+}
+
+BMPColor* mixRGB(BMPColor a, BMPColor b, unsigned mixMethod )
+{
+    BMPColor *resultColor = (BMPColor*)malloc(sizeof(BMPColor));
+
+    switch(mixMethod)
+    {
+        case MIX_BLEND:
+            resultColor->r = a.r*0.5 + b.r*0.5;
+            resultColor->g = a.g*0.5 + b.g*0.5;
+            resultColor->b = a.b*0.5 + b.b*0.5;
+            break;
+        case MIX_ADD:
+            resultColor->r = a.r + b.r;
+            resultColor->g = a.g + b.g;
+            resultColor->b = a.b + b.b;
+            break;
+        case MIX_SUB:
+            resultColor->r = a.r - b.r;
+            resultColor->g = a.g - b.g;
+            resultColor->b = a.b - b.b;
+            break;
+        case MIX_OR:
+            resultColor->r = a.r | b.r;
+            resultColor->g = a.g | b.g;
+            resultColor->b = a.b | b.b;
+            break;
+        case MIX_AND:
+            resultColor->r = a.r & b.r;
+            resultColor->g = a.g & b.g;
+            resultColor->b = a.b & b.b;
+            break;
+        case MIX_XOR:
+            resultColor->r = a.r ^ b.r;
+            resultColor->g = a.g ^ b.g;
+            resultColor->b = a.b ^ b.b;
+            break;
+        default:
+            resultColor->r = a.r;
+            resultColor->g = a.g;
+            resultColor->b = a.b;
+    }
+
+
+    resultColor->r = clamp(resultColor->r, 0, 255);
+    resultColor->g = clamp(resultColor->g, 0, 255);
+    resultColor->b = clamp(resultColor->b, 0, 255);
+
+    return resultColor;
 }
 
 // Distance Functions {{{
