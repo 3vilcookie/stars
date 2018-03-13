@@ -8,7 +8,7 @@
  */
 
 #include "bmp.h"
-size_t bmpWriteColor(uchar **buffer, int width, int height, char *filename)
+size_t bmpWriteColor(BMPColor **buffer, int width, int height, char *filename)
 {
     size_t fsize = width * height * 3  + HEADER_SIZE;
 
@@ -16,20 +16,19 @@ size_t bmpWriteColor(uchar **buffer, int width, int height, char *filename)
     uchar fileHeader[FILE_HEADER_SIZE] = 
     {
         'B','M',    // Magic Number
-        0,0,0,0,    
+        0,0,0,0,    // File Size
+        0,0,        
         0,0,
-        0,0,
-        HEADER_SIZE, // Size of the whole Header
-        0,0,0
+        HEADER_SIZE,0,0,0  // Size of the whole Header 
     };
 
     uchar infoHeader[INFO_HEADER_SIZE] = 
     {
         40,0,0,0,
-        0,0,0,0,
-        0,0,0,0,
-        1,0,
-        24,0    
+        0,0,0,0,    // Image width
+        0,0,0,0,    // Image height
+        1,0,        // 
+        24,0        // Bit-Depth (3 Colors * 8 Bit, BGR )
     };
 
 
@@ -52,13 +51,14 @@ size_t bmpWriteColor(uchar **buffer, int width, int height, char *filename)
     fwrite(fileHeader,1,FILE_HEADER_SIZE,out);
     fwrite(infoHeader,1,INFO_HEADER_SIZE,out);
     
-    uchar paddingLength = (4-(3*width)%4)%4;
     uchar bytesPerPixel = 3;
+    uchar paddingLength = (4-(bytesPerPixel*width)%4)%4;
 
+    // Bitmap is BGR (https://en.wikipedia.org/wiki/BMP_file_format)
     int y;
     for(y=height-1;y>=0;y--)
     {
-        fwrite(&buffer[y][0],bytesPerPixel,width,out);
+        fwrite(&buffer[y][0],sizeof(BMPColor),width,out);
         fwrite(pad,1,paddingLength,out);
     }
 

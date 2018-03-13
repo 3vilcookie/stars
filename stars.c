@@ -26,11 +26,17 @@ enum{//{{{
 
 int main(int argc, char *argv[])//{{{
 {
-		
+    if(argc > 1 && argv[1][0] == 't')
+    {
+        puts("Test Flag set. Generate Test Image");
+        testImage();
+        return EXIT_SUCCESS;
+    }
+
     int width,height;
     char* filename;
     size_t fileSize;
-    int x,y,i;
+    int x,y;
 
     Pos p;
     srand(time(NULL));
@@ -39,9 +45,10 @@ int main(int argc, char *argv[])//{{{
     BMPColor initColor = {0,0,0};
     BMPColor **buffer;
 
-		scanf("%d %d", &width, &height);
 
-		buffer = getEmptyFrameBuffer(width, height,initColor);
+    scanf("%d %d", &width, &height);
+
+    buffer = getEmptyFrameBuffer(width, height,initColor);
 
     if(buffer == NULL)
     {
@@ -49,39 +56,79 @@ int main(int argc, char *argv[])//{{{
         return EXIT_FAILURE;
     }
 
- //   for(i=0;i<STARS;i++)
-		i=0;
-		
-		while(scanf("%d %d %hhu %hhu %hhu %f", &s.pos.x, &s.pos.y, &s.color.r, &s.color.g, &s.color.b, &s.intensity)>0)
+
+    while(scanf("%d %d %hhu %hhu %hhu %f", &s.pos.x, &s.pos.y, &s.color.r, &s.color.g, &s.color.b, &s.intensity)>0)
     {
         fflush(stdout);
 
-       // rndStar.pos.x = (rand() % width)+1;
-       // rndStar.pos.y = (rand() % height)+1;
-
-       // int r = rand() % 256;
-        
-			 //	rndStar.color.r = r;
-       //  rndStar.color.g = r;
-       // rndStar.color.b = r;
-
-       // rndStar.intensity = 3;
         for(y=0;y<height;y++)
             for(x=0;x<width;x++)
             {
                 p.x = x;
                 p.y = y;
-                buffer[y][x] = mixRGB(getPixelColorByStar(s, p),buffer[y][x],MIX_OR);
+                buffer[y][x] = mixRGB(getPixelColorByStar(s, p),buffer[y][x],MIX_XOR);
             }
     }
 
     filename = getUniqueFilenameWithPath(OUTPUT_PATH,BASE_FILENAME,"bmp");
 
-    fileSize = bmpWriteColor((unsigned char**) buffer, width, height, filename);
+    fileSize = bmpWriteColor(buffer, width, height, filename);
     printf("Wrote %lu bytes to %s\n", fileSize, filename);
 
     free(buffer);
     return EXIT_SUCCESS;
+}//}}}
+
+void testImage()//{{{
+{
+    int width = 500;
+    int height = 500;
+    size_t fileSize;
+    char *filename = getUniqueFilenameWithPath(OUTPUT_PATH,"test","bmp");
+    int x,y,i;
+    Pos p;
+    Star stars[] = //{{{
+    {
+        {
+            {width/3,width/3},
+            {0,0,255},
+            20.0
+        },   
+        {
+            {width/2,width*2/3},
+            {0,255,0},
+            20.0
+        },   
+        {
+            {width/3*2,width/3},
+            {255,0,0},
+            20.0
+        }   
+    };//}}}
+
+    BMPColor initColor =  {0,0,0};
+    BMPColor **buffer = getEmptyFrameBuffer(width,height,initColor);
+
+    if(buffer == NULL)
+    {
+        puts("Couldn't allocate memory. Width > 0 and Height > 0?");
+        exit(EXIT_FAILURE);
+    }
+
+
+    for(i=0;i<sizeof(stars)/sizeof(Star); i++)
+        for(y=0;y<height;y++)
+            for(x=0;x<width;x++)
+            {
+                p.x = x;
+                p.y = y;
+                buffer[y][x] = mixRGB(getPixelColorByStar(stars[i], p),buffer[y][x],MIX_ADD);
+            }
+
+
+    fileSize = bmpWriteColor(buffer, width, height, filename);
+    printf("Wrote %lu bytes to %s\n", fileSize, filename);
+
 }//}}}
 
 BMPColor** getEmptyFrameBuffer(unsigned width, unsigned height, BMPColor initColor)

@@ -20,10 +20,6 @@
 #define OUTPUT_PATH "./examples/"
 #define BASE_FILENAME "starout"
 
-typedef struct BMPColor//{{{
-{                           
-    unsigned char r, g, b;  
-}BMPColor;//}}}             
                             
 typedef struct Pos//{{{     
 {                           
@@ -36,6 +32,8 @@ typedef struct Star//{{{
     BMPColor color;   
     float intensity;        
 }Star;//}}}                 
+
+void testImage();
 
 // Utils and usability features which make the main program easier to understand
 BMPColor** getEmptyFrameBuffer(unsigned width, unsigned height, BMPColor initColor);

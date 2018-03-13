@@ -19,6 +19,11 @@
 
 typedef unsigned char uchar;
 
-size_t bmpWriteColor(uchar **buffer, int width, int height, char *filename);
+typedef struct BMPColor//{{{
+{   
+    unsigned char b, g, r;  
+}BMPColor;//}}}          
+
+size_t bmpWriteColor(BMPColor **buffer, int width, int height, char *filename);
 
 #endif
