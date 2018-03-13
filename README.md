@@ -45,7 +45,6 @@ standard input.
 ### Test Image
 
 Use the Switch `t` to generate a test image. This doesn't need any input.
-This will generate the following image.
 
 ![Test Image](examples/readme_title_image2.png)
 
