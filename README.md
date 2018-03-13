@@ -20,15 +20,18 @@ Generating awesome images in Plain C without any libraries (including the bitmap
 For example:
 ```bash
 ~/dev/stars$ ./stars
-1500 1500
-50 50 50 50 50 50.0
-10 100 60 10 10 10.0
-150 15 150 150 15.0
-1000 750 220 220 255 100.0
+400 400
+200 200 200 200 255 20.0
 Wrote 6750054 bytes to ./examples/starout00009.bmp
 ```
 
-This will generate the following image:
+This will generate an 400x400 large image with one white-bluish (looks more realistic than pure white) star in the center. The star has the following properties (in the same order than the input line):
+- x coordinate (mustn't be inside the resolution)
+- y coordinate (mustn't be inside the resolution)
+- red (between 0 and 255)
+- green (between 0 and 255)
+- blue (between 0 and 255)
+- intensity (>0, float)
 
 ![Example Image with single star in the center](examples/readme_title_image3.png)
 
