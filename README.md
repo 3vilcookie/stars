@@ -29,7 +29,7 @@ Wrote 6750054 bytes to ./examples/starout00009.bmp
 ```
 
 This will generate the following image:
-![Example Image with single star in the center](./examples/readme_title_image3.png)
+![Example Image with single star in the center](examples/readme_title_image3.png)
 
 Another method would be to store the input in a file and redirect it into the
 standard input.
