@@ -19,7 +19,7 @@ Generating awesome images in Plain C without any libraries (including the bitmap
 
 For example:
 ```bash
-[13:23:23][raphael@togobian:~/dev/stars]$ ./stars
+~/dev/stars$ ./stars
 1500 1500
 50 50 50 50 50 50.0
 10 100 60 10 10 10.0
@@ -29,6 +29,7 @@ Wrote 6750054 bytes to ./examples/starout00009.bmp
 ```
 
 This will generate the following image:
+
 ![Example Image with single star in the center](examples/readme_title_image3.png)
 
 Another method would be to store the input in a file and redirect it into the
