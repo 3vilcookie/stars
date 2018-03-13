@@ -26,6 +26,7 @@ Wrote 6750054 bytes to ./examples/starout00009.bmp
 ```
 
 This will generate an 400x400 large image with one white-bluish (looks more realistic than pure white) star in the center. The star has the following properties (in the same order than the input line):
+
 - x coordinate (mustn't be inside the resolution)
 - y coordinate (mustn't be inside the resolution)
 - red (between 0 and 255)
