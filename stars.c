@@ -66,7 +66,7 @@ int main(int argc, char *argv[])//{{{
             {
                 p.x = x;
                 p.y = y;
-                buffer[y][x] = mixRGB(getPixelColorByStar(s, p),buffer[y][x],MIX_XOR);
+                buffer[y][x] = mixRGB(getPixelColorByStar(s, p),buffer[y][x],MIX_OR);
             }
     }
 
@@ -75,7 +75,34 @@ int main(int argc, char *argv[])//{{{
     fileSize = bmpWriteColor(buffer, width, height, filename);
     printf("Wrote %lu bytes to %s\n", fileSize, filename);
 
-    free(buffer);
+    printf("   | ");
+    for(x=0;x<width;x++)
+        printf("%x", x % 16);
+    
+    printf("\n---+-");
+    for(x=0;x<width;x++)
+        printf("-");
+
+    puts("");
+    for(y=0;y<height;y++)
+    {
+        printf("%03x| ",y);
+        for(x=0;x<width;x++)
+        {
+            BMPColor currentPixel = buffer[y][x];
+
+            float shellRed = (currentPixel.r) ? currentPixel.r/51.0 : 0;
+            float shellGreen = (currentPixel.g) ? currentPixel.g/51.0 : 0;
+            float shellBlue = (currentPixel.b) ?  currentPixel.b/51.0 : 0;
+            int shellColor = 16 + 36*shellRed + 6*shellGreen + shellBlue;
+            //printf("[d]  Original Color: %d/%d/%d\n", currentPixel.r, currentPixel.g, currentPixel.b);
+            //printf("[d] Converted Color: %.2f/%.2f/%.2f\n", shellRed, shellGreen, shellBlue);
+            printf("\e[48;5;%dm \e[0m",shellColor);
+            
+            }
+        printf("\n");
+    }
+    //free(buffer);
     return EXIT_SUCCESS;
 }//}}}
 
@@ -106,32 +133,32 @@ void testImage()//{{{
         }   
     };//}}}
 
-    BMPColor initColor =  {0,0,0};
-    BMPColor **buffer = getEmptyFrameBuffer(width,height,initColor);
+BMPColor initColor =  {0,0,0};
+BMPColor **buffer = getEmptyFrameBuffer(width,height,initColor);
 
-    if(buffer == NULL)
-    {
-        puts("Couldn't allocate memory. Width > 0 and Height > 0?");
-        exit(EXIT_FAILURE);
-    }
-
-
-    for(i=0;i<sizeof(stars)/sizeof(Star); i++)
-        for(y=0;y<height;y++)
-            for(x=0;x<width;x++)
-            {
-                p.x = x;
-                p.y = y;
-                buffer[y][x] = mixRGB(getPixelColorByStar(stars[i], p),buffer[y][x],MIX_ADD);
-            }
+if(buffer == NULL)
+{
+    puts("Couldn't allocate memory. Width > 0 and Height > 0?");
+    exit(EXIT_FAILURE);
+}
 
 
-    fileSize = bmpWriteColor(buffer, width, height, filename);
-    printf("Wrote %lu bytes to %s\n", fileSize, filename);
+for(i=0;i<sizeof(stars)/sizeof(Star); i++)
+for(y=0;y<height;y++)
+for(x=0;x<width;x++)
+{
+    p.x = x;
+    p.y = y;
+    buffer[y][x] = mixRGB(getPixelColorByStar(stars[i], p),buffer[y][x],MIX_ADD);
+}
+
+
+fileSize = bmpWriteColor(buffer, width, height, filename);
+printf("Wrote %lu bytes to %s\n", fileSize, filename);
 
 }//}}}
 
-BMPColor** getEmptyFrameBuffer(unsigned width, unsigned height, BMPColor initColor)
+BMPColor** getEmptyFrameBuffer(unsigned width, unsigned height, BMPColor initColor)//{{{
 {
     if(width == 0 || height == 0)
         return NULL;
@@ -161,7 +188,7 @@ BMPColor** getEmptyFrameBuffer(unsigned width, unsigned height, BMPColor initCol
 
     return buffer;
 
-}
+}//}}}
 
 char* getUniqueFrameFilenameWithPath(char* path, char* baseFilename, unsigned frameNumber, char* extension)//{{{
 {
@@ -216,6 +243,7 @@ char* getUniqueFilenameWithPath(char* path, char* baseFilename, char* extension)
 BMPColor getPixelColorByStar(Star s, Pos pixelPos)//{{{
 {
     float d = euclidieanDistance(s.pos, pixelPos);
+    //    float d = manhattanDistance(s.pos, pixelPos);
 
     BMPColor *c = (BMPColor*) malloc(sizeof(BMPColor));
 
