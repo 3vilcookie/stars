@@ -26,12 +26,23 @@ enum{//{{{
 
 int main(int argc, char *argv[])//{{{
 {
-    if(argc > 1 && argv[1][0] == 't')
-    {
-        puts("Test Flag set. Generate Test Image");
-        testImage();
-        return EXIT_SUCCESS;
-    }
+    char view = 0;
+
+    int i;
+    for(i=1; i< argc;i++)
+        switch(argv[1][0])
+        {
+            case 't':
+                puts("Test Flag set. Generate Test Image");
+                testImage();
+                return EXIT_SUCCESS;
+            case 'v':
+                view = 1;
+                break;
+            default:
+                printf("Unknown argument '%c'\n",argv[1][0]);
+        }
+
 
     int width,height;
     char* filename;
@@ -66,7 +77,7 @@ int main(int argc, char *argv[])//{{{
             {
                 p.x = x;
                 p.y = y;
-                buffer[y][x] = mixRGB(getPixelColorByStar(s, p),buffer[y][x],MIX_OR);
+                buffer[y][x] = mixRGB(getPixelColorByStar(s, p),buffer[y][x],MIX_ADD);
             }
     }
 
@@ -75,36 +86,67 @@ int main(int argc, char *argv[])//{{{
     fileSize = bmpWriteColor(buffer, width, height, filename);
     printf("Wrote %lu bytes to %s\n", fileSize, filename);
 
-    printf("   | ");
-    for(x=0;x<width;x++)
-        printf("%x", x % 16);
-    
-    printf("\n---+-");
-    for(x=0;x<width;x++)
-        printf("-");
-
-    puts("");
-    for(y=0;y<height;y++)
-    {
-        printf("%03x| ",y);
-        for(x=0;x<width;x++)
-        {
-            BMPColor currentPixel = buffer[y][x];
-
-            float shellRed = (currentPixel.r) ? currentPixel.r/51.0 : 0;
-            float shellGreen = (currentPixel.g) ? currentPixel.g/51.0 : 0;
-            float shellBlue = (currentPixel.b) ?  currentPixel.b/51.0 : 0;
-            int shellColor = 16 + 36*shellRed + 6*shellGreen + shellBlue;
-            //printf("[d]  Original Color: %d/%d/%d\n", currentPixel.r, currentPixel.g, currentPixel.b);
-            //printf("[d] Converted Color: %.2f/%.2f/%.2f\n", shellRed, shellGreen, shellBlue);
-            printf("\e[48;5;%dm \e[0m",shellColor);
-            
-            }
-        printf("\n");
-    }
+    if(view)
+        viewBitmap(buffer,width,height);
     //free(buffer);
     return EXIT_SUCCESS;
 }//}}}
+
+void viewBitmap(BMPColor** buffer, int width, int height){
+    int x,y;
+        printf("   | ");
+        for(x=0;x<width;x++)
+            printf("%x", x % 16);
+
+        printf("\n---+-");
+        for(x=0;x<width;x++)
+            printf("-");
+
+        puts("");
+        for(y=0;y<height;y++)
+        {
+            printf("%03x| ",y);
+            for(x=0;x<width;x++)
+            {
+                BMPColor currentPixel = buffer[y][x];
+
+                int shellColor = rgbToAnsi256(currentPixel.r, currentPixel.g, currentPixel.b);
+                //float shellRed = (currentPixel.r) ? currentPixel.r/51.0 : 0;
+                //float shellGreen = (currentPixel.g) ? currentPixel.g/51.0 : 0;
+                //float shellBlue = (currentPixel.b) ?  currentPixel.b/51.0 : 0;
+                //int shellColor = 16 + 36*shellRed + 6*shellGreen + shellBlue;
+                //printf("[d]  Original Color: %d/%d/%d\n", currentPixel.r, currentPixel.g, currentPixel.b);
+                //printf("[d] Converted Color: %.2f/%.2f/%.2f\n", shellRed, shellGreen, shellBlue);
+                printf("\e[48;5;%dm \e[0m",shellColor);
+
+            }
+            printf("\n");
+        }
+}
+
+
+int rgbToAnsi256(int r, int g, int b) {
+    // we use the extended greyscale palette here, with the exception of
+    // black and white. normal palette only has 4 greyscale shades.
+    if (r == g && g == b) {
+        if (r < 8) {
+            return 16;
+        }
+
+        if (r > 248) {
+            return 231;
+        }
+
+        return round(((r - 8) / 247) * 24) + 232;
+    }
+
+    int ansi = 16
+        + (36 * round(r / 255 * 5))
+        + (6 * round(g / 255 * 5))
+        + round(b / 255 * 5);
+
+    return ansi;
+}
 
 void testImage()//{{{
 {
