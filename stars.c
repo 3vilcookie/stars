@@ -27,21 +27,54 @@ enum{//{{{
 int main(int argc, char *argv[])//{{{
 {
     char view = 0;
+	char trueColor = 0;
+	int mixFunction = MIX_ADD;
 
     int i;
     for(i=1; i< argc;i++)
-        switch(argv[1][0])
-        {
-            case 't':
-                puts("Test Flag set. Generate Test Image");
-                testImage();
-                return EXIT_SUCCESS;
-            case 'v':
-                view = 1;
-                break;
-            default:
+		if(argv[i][0] == 't' || (strcmp(argv[i],"--test") == 0))
+		{
+			puts("Test Flag set. Generate Test Image");
+			testImage();
+			return EXIT_SUCCESS;
+		}
+		else if(argv[i][0] == 'v' || (strcmp(argv[i],"--view") == 0))
+			view = 1;
+		else if(argv[i][0] == 'c' || (strcmp(argv[i],"--true-color") == 0))
+			trueColor = 1;
+		else if(argv[i][0] == 'x' || (strcmp(argv[i],"--mix-function") == 0))
+		{
+			int iValue = i+1;
+			if(iValue < argc)
+			{
+				if(strcmp(argv[iValue],"add")==0)
+					mixFunction = MIX_ADD;
+				else if(strcmp(argv[iValue],"sub")==0)
+					mixFunction = MIX_SUB;
+				else if(strcmp(argv[iValue],"mul")==0)
+					mixFunction = MIX_MUL;
+				else if(strcmp(argv[iValue],"or")==0)
+					mixFunction = MIX_OR;
+				else if(strcmp(argv[iValue],"and")==0)
+					mixFunction = MIX_AND;
+				else if(strcmp(argv[iValue],"xor")==0)
+					mixFunction = MIX_XOR;
+				else if(strcmp(argv[iValue],"blend")==0)
+					mixFunction = MIX_BLEND;
+				else
+				{
+					printf("Unknown mix function\n");
+					return EXIT_FAILURE;
+				}
+			}
+			else
+			{
+				printf("Mix function missing\n");
+				return EXIT_FAILURE;
+			}
+		}
+        else
                 printf("Unknown argument '%c'\n",argv[1][0]);
-        }
 
 
     int width,height;
@@ -77,7 +110,7 @@ int main(int argc, char *argv[])//{{{
             {
                 p.x = x;
                 p.y = y;
-                buffer[y][x] = mixRGB(getPixelColorByStar(s, p),buffer[y][x],MIX_ADD);
+                buffer[y][x] = mixRGB(getPixelColorByStar(s, p),buffer[y][x],mixFunction);
             }
     }
 
@@ -87,12 +120,12 @@ int main(int argc, char *argv[])//{{{
     printf("Wrote %lu bytes to %s\n", fileSize, filename);
 
     if(view)
-        viewBitmap(buffer,width,height);
+        viewBitmap(buffer,width,height, trueColor);
     //free(buffer);
     return EXIT_SUCCESS;
 }//}}}
 
-void viewBitmap(BMPColor** buffer, int width, int height){
+void viewBitmap(BMPColor** buffer, int width, int height, char trueColor){
     int x,y;
         printf("   | ");
         for(x=0;x<width;x++)
@@ -110,15 +143,10 @@ void viewBitmap(BMPColor** buffer, int width, int height){
             {
                 BMPColor currentPixel = buffer[y][x];
 
-                int shellColor = rgbToAnsi256(currentPixel.r, currentPixel.g, currentPixel.b);
-                //float shellRed = (currentPixel.r) ? currentPixel.r/51.0 : 0;
-                //float shellGreen = (currentPixel.g) ? currentPixel.g/51.0 : 0;
-                //float shellBlue = (currentPixel.b) ?  currentPixel.b/51.0 : 0;
-                //int shellColor = 16 + 36*shellRed + 6*shellGreen + shellBlue;
-                //printf("[d]  Original Color: %d/%d/%d\n", currentPixel.r, currentPixel.g, currentPixel.b);
-                //printf("[d] Converted Color: %.2f/%.2f/%.2f\n", shellRed, shellGreen, shellBlue);
-                printf("\e[48;5;%dm \e[0m",shellColor);
-
+				if(trueColor)
+					printf("\x1b[48;2;%d;%d;%dm \x1b[0m", currentPixel.r, currentPixel.g, currentPixel.b);
+				else
+					printf("\e[48;5;%dm \e[0m",rgbToAnsi256(currentPixel.r, currentPixel.g, currentPixel.b));
             }
             printf("\n");
         }
