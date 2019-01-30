@@ -41,6 +41,8 @@ char* getUniqueFilenameWithPath(char* path, char* baseFilename, char* extension)
 char* getUniqueFrameFilenameWithPath(char* path, char* baseFilename, unsigned frameNumber, char* extension);
 BMPColor mixRGB(BMPColor a, BMPColor b, unsigned mixMethod );
 
+void viewBitmap(BMPColor** buffer, int width, int height);
+int rgbToAnsi256(int r, int g, int b);
 
 // Where the Graphic Stuff happens
 BMPColor getPixelColorByStar(Star s, Pos pixel);
