@@ -3,7 +3,7 @@
  * @brief   Generates pictures of stars in space
  * @date    11/02/2018
  * @author  Raphael Pour <info@raphaelpour.de>
- * @license LGPL
+ * @license GPL
  *
  */
 
@@ -14,7 +14,6 @@
 #include "stars.h"
 
 enum{//{{{
-
     MIX_XOR,
     MIX_BLEND,
     MIX_ADD,
