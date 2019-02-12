@@ -3,7 +3,7 @@
  * @brief   Writes/Reads bmp files from/into memory
  * @date    11/02/2018
  * @author  Raphael Pour <info@raphaelpour.de>
- * @license LGPL
+ * @license GPL
  *
  */
 
