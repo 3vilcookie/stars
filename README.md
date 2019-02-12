@@ -54,4 +54,4 @@ Use the Switch `t` to generate a test image. This doesn't need any input.
 - Bitmap Writer: https://stackoverflow.com/a/2654860
 
 ## License
-LGPL
+GPL
