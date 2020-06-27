@@ -13,6 +13,14 @@
 
 #include "stars.h"
 
+#ifndef BUILD_DATE
+#define BUILD_DATE "fix your makefile"
+#endif
+
+#ifndef BUILD_VERSION
+#define BUILD_VERSION "fix your makefile"
+#endif
+
 enum{//{{{
     MIX_XOR,
     MIX_BLEND,
@@ -37,7 +45,12 @@ int main(int argc, char *argv[])//{{{
 			testImage();
 			return EXIT_SUCCESS;
 		}
-		else if(argv[i][0] == 'v' || (strcmp(argv[i],"--view") == 0))
+    else if(argv[i][0] == 'v' || (strcmp(argv[i],"--version") == 0))
+    {
+      printf("Build version: %s\nBuild date: %s\n", BUILD_VERSION, BUILD_DATE);
+      return EXIT_SUCCESS;
+    }
+		else if(argv[i][0] == 'w' || (strcmp(argv[i],"--view") == 0))
 			view = 1;
 		else if(argv[i][0] == 'c' || (strcmp(argv[i],"--true-color") == 0))
 			trueColor = 1;
