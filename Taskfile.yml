@@ -7,3 +7,9 @@ includes:
 
 vars:
   BINARY: 'stars'
+
+tasks:
+  test:
+    cmds:
+      - true
+
