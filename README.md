@@ -1,4 +1,4 @@
-![Image filled with a lot of Stars](examples/readme_title_image.png)
+![Image filled with a lot of Stars](doc/readme_title_image1.png)
 # Stars
 
 Generates Images filled with stars. 
@@ -34,7 +34,7 @@ This will generate an 400x400 large image with one white-bluish (looks more real
 - blue (between 0 and 255)
 - intensity (>0, float)
 
-![Example Image with single star in the center](examples/readme_title_image3.png)
+![Example Image with single star in the center](doc/readme_title_image3.png)
 
 Another method would be to store the input in a file and redirect it into the
 standard input.
@@ -46,7 +46,7 @@ standard input.
 
 Use the Switch `t` to generate a test image. This doesn't need any input.
 
-![Test Image](examples/readme_title_image2.png)
+![Test Image](doc/readme_title_image2.png)
 
 ## References
 
