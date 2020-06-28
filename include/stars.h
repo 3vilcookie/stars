@@ -20,18 +20,18 @@
 #define OUTPUT_PATH "./examples/"
 #define BASE_FILENAME "starout"
 
-                            
-typedef struct Pos//{{{     
+
+typedef struct Pos  
 {                           
-    int x,y;                
-}Pos;//}}}                  
-                            
-typedef struct Star//{{{    
+  int x,y;                
+}Pos;          
+
+typedef struct Star  
 {                           
-    Pos pos;                  
-    BMPColor color;   
-    float intensity;        
-}Star;//}}}                 
+  Pos pos;                  
+  BMPColor color;   
+  float intensity;        
+}Star;                 
 
 void testImage();
 
